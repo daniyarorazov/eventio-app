@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/event/:id" element={ <EventPage/> } />
               <Route path="/create-event/" element={ currentStateUser ? <CreateEventView/> : <EventPage/> } />
               <Route path="/events/" element={ <ListEvents /> } />
-              <Route path="/result/:id" element={ <ResultCreatedEventView /> } />
+              <Route path="/share/:id" element={ <ResultCreatedEventView /> } />
           </Routes>
       </BrowserRouter>
   </React.StrictMode>,

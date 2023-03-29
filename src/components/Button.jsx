@@ -11,7 +11,7 @@ const Button = ({value, onClick, className}) => {
         fontWeight: "800",
         fontSize: "16px",
         backgroundColor: "#FF87C8",
-
+        cursor: 'pointer'
     }
 
     return (

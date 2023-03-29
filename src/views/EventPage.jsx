@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import './EventPage.css';
 import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
@@ -7,6 +7,7 @@ import download from '../assets/download.svg';
 
 import { doc, getDoc } from "firebase/firestore";
 import { firestore as db, auth } from "../db";
+import Button from "../components/Button.jsx";
 
 async function getUserById(id) {
     const docRef = doc(db, "events", id);
@@ -15,9 +16,6 @@ async function getUserById(id) {
         return docSnap.data();
     }
 }
-
-
-
 
 const EventPage = () => {
 
@@ -50,6 +48,11 @@ const EventPage = () => {
             {event && (
             <header>
                 {event.uid == userID ? <h1>Hello Admin</h1> : null}
+                <Link to={`http://localhost:5173/share/${id}`}>
+                    <Button
+                    value={"Share QR code"}
+                    className="form-block__button"
+                /></Link>
                 <h2>{event.title}</h2>
                 <div className="event-title" style={{ backgroundImage: `url(${sprite})` }}>
                     <h3>{event.date}</h3>

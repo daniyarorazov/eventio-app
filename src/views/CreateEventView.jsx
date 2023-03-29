@@ -44,7 +44,7 @@ const CreateEventView = () => {
             setDate('');
             setGuest('');
             setGuestProject('');
-            navigate(`/result/${docRef.id}`);
+            navigate(`/share/${docRef.id}`);
         } catch (error) {
             console.error('Error adding document: ', error);
         }
