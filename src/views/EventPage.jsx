@@ -1,20 +1,62 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import './EventPage.css';
 import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
 import download from '../assets/download.svg';
+
+import { doc, getDoc } from "firebase/firestore";
+import { firestore as db, auth } from "../db";
+
+async function getUserById(id) {
+    const docRef = doc(db, "events", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data();
+    }
+}
+
+
+
+
 const EventPage = () => {
+
     const { id } = useParams();
-    console.log(id)
+    const [event, setEvent] = useState(null);
+
+    useEffect(() => {
+        getUserById(id).then((data) => {
+            setEvent(data);
+        });
+    }, [id]);
+
+    const [userID, setUserID] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                setUserID(user.uid);
+            } else {
+                setUserID(null);
+            }
+        });
+
+        return unsubscribe;
+    }, []);
+
     return (
+
         <>
+            {event && (
             <header>
-                <h2>Event</h2>
+                {event.uid == userID ? <h1>Hello Admin</h1> : null}
+                <h2>{event.title}</h2>
                 <div className="event-title" style={{ backgroundImage: `url(${sprite})` }}>
-                    <h3>28 Mar 17.00</h3>
+                    <h3>{event.date}</h3>
                 </div>
             </header>
+                )}
+            {event && (
             <main>
                 <section className="section section-event-timeline">
                     <div className="event__1 event-block ">
@@ -24,8 +66,8 @@ const EventPage = () => {
                             <div className="card-event">
                                 <img src="https://images.unsplash.com/photo-1497290756760-23ac55edf36f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80" alt=""/>
                                 <div className="card-event__content">
-                                    <h4 className="disabled">GeoApp</h4>
-                                    <span>Jakub</span>
+                                    <h4 className="disabled">{event.guestProject}</h4>
+                                    <span>{event.guest}</span>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +151,7 @@ const EventPage = () => {
                     </div>
                 </section>
             </main>
-
+            )}
         </>
     );
 };

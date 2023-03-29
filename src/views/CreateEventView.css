@@ -1,0 +1,19 @@
+
+
+.form-block {
+    max-width: 400px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 40px;
+}
+
+.form-block__input {
+    margin-bottom: 20px;
+}
+
+.form-block__button {
+    margin-top: 20px;
+}

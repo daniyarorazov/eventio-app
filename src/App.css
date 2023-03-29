@@ -5,6 +5,31 @@
     color: #fff;
 }
 
+
+body {
+    background: #031927;
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    position: relative;
+    background-repeat: repeat;
+}
+
 button {
     background-color: #143A52;
+}
+
+
+.background img:first-child {
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: 0;
+    z-index: -2321;
+}
+
+.background img:last-child {
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: -2321;
 }

@@ -4,6 +4,7 @@ import {getAuth} from "firebase/auth";
 import {getFirestore} from "firebase/firestore";
 import {getPerformance} from "firebase/performance";
 import {getStorage} from "firebase/storage";
+import {useAuthState} from "react-firebase-hooks/auth";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -19,3 +20,12 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const performance = getPerformance(app);
 export const storage = getStorage(app);
+
+export function currentStateUser() {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const [user] = useAuthState(getAuth(auth));
+    console.log(user)
+    return user;
+}
+
