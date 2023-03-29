@@ -53,23 +53,32 @@ const EventPage = () => {
             );
             const subcollectionSnapshot = await getDocs(subcollectionRef);
             const data = subcollectionSnapshot.docs.map((doc) => doc.data());
-            setSubcollectionData(data);
+            const sortedGuests = data.sort((a, b) => a.id - b.id);
+            setSubcollectionData(sortedGuests);
         };
         fetchData();
     }, []);
 
-console.log(subcollectionData)
     return (
 
         <>
             {event && (
             <header>
-                {event.uid == userID ? <h1>Hello Admin</h1> : null}
+                <br/><br/>
                 <Link to={`http://localhost:5173/share/${id}`}>
                     <Button
                     value={"Share QR code"}
                     className="event-page__button"
                 /></Link>
+                <br/><br/>
+                {event.uid == userID ?
+                    <Link to={`http://localhost:5173/event/edit/${id}`}>
+                    <Button
+                        value={"Edit event"}
+                        className="event-page__button"
+                    /></Link>
+                    : null}
+
                 <h2>{event.title}</h2>
                 <div className="event-title" style={{ backgroundImage: `url(${sprite})` }}>
                     <h3>{event.date}</h3>
@@ -104,8 +113,6 @@ console.log(subcollectionData)
                             </div>
                         ))
                     )}
-
-
                 </section>
                 <section className="section section-materials">
                     <h2>All available materials</h2>

@@ -8,6 +8,7 @@ import CreateEventView from "./views/CreateEventView.jsx";
 import ListEvents from "./views/ListEvents.jsx";
 import {currentStateUser} from "./db.jsx";
 import ResultCreatedEventView from "./views/ResultCreatedEventView.jsx";
+import EditEventPage from "./views/EditEventPage.jsx";
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/create-event/" element={ currentStateUser ? <CreateEventView/> : <EventPage/> } />
               <Route path="/events/" element={ <ListEvents /> } />
               <Route path="/share/:id" element={ <ResultCreatedEventView /> } />
+              <Route path="/event/edit/:id" element={ <EditEventPage /> } />
           </Routes>
       </BrowserRouter>
   </React.StrictMode>,
