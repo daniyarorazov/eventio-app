@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Button = ({value, onClick, className}) => {
+const Button = ({value, onClick, className, backgroundColor, fontSize}) => {
 
     const style = {
         width: "100%",
@@ -9,9 +9,10 @@ const Button = ({value, onClick, className}) => {
         border: 'none',
         borderRadius: "9px",
         fontWeight: "800",
-        fontSize: "16px",
-        backgroundColor: "#FF87C8",
-        cursor: 'pointer'
+        fontSize: fontSize ? fontSize : "16px",
+        backgroundColor: backgroundColor ? backgroundColor : "#FF87C8",
+        color: backgroundColor ? "#1B445F" : "#fff",
+        cursor: 'pointer',
     }
 
     return (

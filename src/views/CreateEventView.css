@@ -17,3 +17,8 @@
 .form-block__button {
     margin-top: 20px;
 }
+
+.form-block__button:last-child {
+    margin-bottom: 100px;
+
+}

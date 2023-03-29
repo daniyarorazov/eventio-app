@@ -117,14 +117,12 @@ const CreateEventView = () => {
             ))}
             <Button
                 onClick={handleAddNewField}
-                value={"+"}
+                value={"Add new guest"}
                 className="form-block__button"
+                backgroundColor={"#FFE68D"}
+                fontSize="20px"
             />
-            <Button
-                onClick={() => console.log(guests)}
-                value={"print"}
-                className="form-block__button"
-            />
+
             <Button
                 onClick={handleSubmit}
                 value={"Add Event"}

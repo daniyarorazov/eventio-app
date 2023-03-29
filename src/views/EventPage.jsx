@@ -68,7 +68,7 @@ console.log(subcollectionData)
                 <Link to={`http://localhost:5173/share/${id}`}>
                     <Button
                     value={"Share QR code"}
-                    className="form-block__button"
+                    className="event-page__button"
                 /></Link>
                 <h2>{event.title}</h2>
                 <div className="event-title" style={{ backgroundImage: `url(${sprite})` }}>
