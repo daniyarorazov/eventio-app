@@ -32,30 +32,6 @@ const EventPage = () => {
         return () => unsubscribe();
     }, );
 
-    // async function getUserById(id) {
-    //     const docRef = doc(db, "events", id);
-    //
-    //     const unsubscribe = onSnapshot(docRef, (docSnap) => {
-    //         if (docSnap.exists()) {
-    //             setEvent(docSnap.data());
-    //         }
-    //     });
-    //
-    //     return unsubscribe;
-    // }
-    // useEffect(() => {
-    //     let unsubscribe;
-    //
-    //     async function fetchData() {
-    //         unsubscribe = await getUserById(id);
-    //     }
-    //
-    //     fetchData();
-    //
-    //     return () => {
-    //         unsubscribe();
-    //     };
-    // }, [id]);
 
     const [userID, setUserID] = useState(null);
 
@@ -76,7 +52,7 @@ const EventPage = () => {
         const q = query(subcollectionRef);
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const data = querySnapshot.docs.map((doc) => doc.data());
-            const sortedGuests = data.sort((a, b) => a.id - b.id);
+            const sortedGuests = data.sort((a, b) => a.orderId - b.orderId);
             setSubcollectionData(sortedGuests);
         });
 
