@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {collection, addDoc, updateDoc, doc, getDocs, getDoc} from "firebase/firestore";
+import {collection, addDoc, updateDoc, doc, getDocs, getDoc, setDoc} from "firebase/firestore";
 import {app, auth, firestore as db, firestore, performance, storage} from "../db";
 import './CreateEventView.css';
 import InputField from "../components/InputField.jsx";
@@ -19,6 +19,7 @@ const EditEventPage = () => {
     const [date, setDate] = useState('');
     const [guests, setGuests] = useState([
     ]);
+    const [newGuests, setNewGuests] = useState([]);
     const [event, setEvent] = useState();
     const [collectionData, setCollectionData] = useState([]);
     const [subcollectionData, setSubcollectionData] = useState([]);
@@ -44,13 +45,13 @@ const EditEventPage = () => {
 
     const handleAddNewField = () => {
         setNumFields(numFields + 1);
-        setGuests([...guests, { id: numFields + 1, name: "", project: "" }]);
+        setNewGuests([...newGuests, { orderId: numFields + 1, name: "", project: "" }]);
     };
 
 
-    const handleNameChange = (id, value) => {
-        setGuests(guests.map((guest) => {
-            if (guest.id === id) {
+    const handleNameChange = (id, value, stateObj, setStateFunc) => {
+        setStateFunc(stateObj.map((guest) => {
+            if (guest.orderId === id) {
                 return { ...guest, name: value };
             } else {
                 return guest;
@@ -58,9 +59,9 @@ const EditEventPage = () => {
         }));
     };
 
-    const handleProjectChange = (id, value) => {
-        setGuests(guests.map((guest) => {
-            if (guest.id === id) {
+    const handleProjectChange = (id, value, stateObj, setStateFunc) => {
+        setStateFunc(stateObj.map((guest) => {
+            if (guest.orderId === id) {
                 return { ...guest, project: value };
             } else {
                 return guest;
@@ -86,11 +87,11 @@ const EditEventPage = () => {
             const subcollectionSnapshot = await getDocs(subcollectionRef);
             const data = subcollectionSnapshot.docs.map((doc) => doc.data());
 
-            const sortedGuests = data.sort((a, b) => a.id - b.id);
+            const sortedGuests = data.sort((a, b) => a.orderId - b.orderId);
 
             setGuests(sortedGuests);
-
-            setNumFields(sortedGuests.length)
+            const maxId = Math.max(...sortedGuests.map(guest => guest.orderId));
+            setNumFields(maxId)
 
         };
         fetchData();
@@ -109,9 +110,33 @@ const EditEventPage = () => {
         fetchSubcollectionData();
     }, []);
 
+
+    const updateOrCreateGuest = async (eventId, guestId, dataToUpdate) => {
+        try {
+            const guestRef = doc(db, `events/${eventId}/guests/${guestId}`);
+            const guestDoc = await getDoc(guestRef);
+            await updateDoc(guestRef, dataToUpdate);
+
+        } catch (error) {
+            console.error("Error updating or creating guest: ", error);
+        }
+    };
     const handleSubmit = async () => {
         const docRef = doc(db, "events", id);
-        // await updateDoc(collection(docRef, 'guests'), guests);
+
+        const guestsRef = collection(db, `events/${id}/guests`);
+        const guestsSnapshot = await getDocs(guestsRef);
+        const guestsList = guestsSnapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+        guestsList.forEach((guest, key) => {
+             guests.map((el) => el.orderId === guest.orderId ? updateOrCreateGuest(id, guest.id, el) : null);
+        });
+
+        newGuests.forEach((guest) => {
+            addDoc(collection(doc(db, 'events', id), 'guests'), guest);
+        });
+
+
+
 
         await updateDoc(docRef, {
             title: nameEvent,
@@ -119,12 +144,8 @@ const EditEventPage = () => {
             uid: uid
         });
 
-        // console.log(guestRef)
-        // guests.forEach(async (guest) => {
-        //     await updateDoc(guestRef, guest);
-        // });
-    //     setDocID(docRef.id)
-    //     navigate(`/event/${docRef.id}`);
+
+        navigate(`/event/${docRef.id}`);
     }
 
 
@@ -145,19 +166,37 @@ const EditEventPage = () => {
                 className="form-block__input"
             />
             {guests.map((guest) => (
-                <div key={guest.id}>
+                <div key={guest.orderId}>
                     <InputField
                         type="text"
                         valueInput={guest.name}
-                        onChange={(e) => handleNameChange(guest.id, e.target.value)}
-                        valueLabel={`Guest name (${guest.id})`}
+                        onChange={(e) => handleNameChange(guest.orderId, e.target.value, guests, setGuests)}
+                        valueLabel={`Guest name (${guest.orderId})`}
                         className="form-block__input"
                     />
                     <InputField
                         type="text"
                         valueInput={guest.project}
-                        onChange={(e) => handleProjectChange(guest.id, e.target.value)}
-                        valueLabel={`Guest project (${guest.id})`}
+                        onChange={(e) => handleProjectChange(guest.orderId, e.target.value, guests, setGuests)}
+                        valueLabel={`Guest project (${guest.orderId})`}
+                        className="form-block__input"
+                    />
+                </div>
+            ))}
+            {newGuests.map((guest) => (
+                <div key={guest.orderId}>
+                    <InputField
+                        type="text"
+                        valueInput={guest.name}
+                        onChange={(e) => handleNameChange(guest.orderId, e.target.value, newGuests, setNewGuests)}
+                        valueLabel={`Guest name (${guest.orderId})`}
+                        className="form-block__input"
+                    />
+                    <InputField
+                        type="text"
+                        valueInput={guest.project}
+                        onChange={(e) => handleProjectChange(guest.orderId, e.target.value, newGuests, setNewGuests)}
+                        valueLabel={`Guest project (${guest.orderId})`}
                         className="form-block__input"
                     />
                 </div>

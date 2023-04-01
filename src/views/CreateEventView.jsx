@@ -12,7 +12,7 @@ const CreateEventView = () => {
     const [nameEvent, setNameEvent] = useState('');
     const [date, setDate] = useState('');
     const [guests, setGuests] = useState([
-        { id: 1, name: "", project: "" },
+        { orderId: 1, name: "", project: "" },
     ]);
 
     const [docID, setDocID] = useState('');
@@ -55,13 +55,13 @@ const CreateEventView = () => {
 
     const handleAddNewField = () => {
         setNumFields(numFields + 1);
-        setGuests([...guests, { id: numFields + 1, name: "", project: "" }]);
+        setGuests([...guests, { orderId: numFields + 1, name: "", project: "" }]);
     };
 
 
     const handleNameChange = (id, value) => {
         setGuests(guests.map((guest) => {
-            if (guest.id === id) {
+            if (guest.orderId === id) {
                 return { ...guest, name: value };
             } else {
                 return guest;
@@ -71,7 +71,7 @@ const CreateEventView = () => {
 
     const handleProjectChange = (id, value) => {
         setGuests(guests.map((guest) => {
-            if (guest.id === id) {
+            if (guest.orderId === id) {
                 return { ...guest, project: value };
             } else {
                 return guest;
@@ -98,19 +98,19 @@ const CreateEventView = () => {
                 className="form-block__input"
             />
             {guests.map((guest) => (
-                <div key={guest.id}>
+                <div key={guest.orderId}>
                     <InputField
                         type="text"
                         valueInput={guest.name}
-                        onChange={(e) => handleNameChange(guest.id, e.target.value)}
-                        valueLabel={`Guest name (${guest.id})`}
+                        onChange={(e) => handleNameChange(guest.orderId, e.target.value)}
+                        valueLabel={`Guest name (${guest.orderId})`}
                         className="form-block__input"
                     />
                     <InputField
                         type="text"
                         valueInput={guest.project}
-                        onChange={(e) => handleProjectChange(guest.id, e.target.value)}
-                        valueLabel={`Guest project (${guest.id})`}
+                        onChange={(e) => handleProjectChange(guest.orderId, e.target.value)}
+                        valueLabel={`Guest project (${guest.orderId})`}
                         className="form-block__input"
                     />
                 </div>
