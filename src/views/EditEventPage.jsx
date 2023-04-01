@@ -246,6 +246,11 @@ const EditEventPage = () => {
                 value={"Update Event"}
                 className="form-block__button"
             />
+            <Button
+                onClick={(e) => navigate(`/event/${id}`)}
+                value={"Cancel"}
+                className="form-block__button"
+            />
         </div>
     );
 };
