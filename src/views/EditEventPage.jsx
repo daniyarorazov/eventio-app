@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {collection, addDoc, updateDoc, doc, getDocs, getDoc, setDoc} from "firebase/firestore";
-import {app, auth, firestore as db, firestore, performance, storage} from "../db";
+import {collection, addDoc, updateDoc, doc, getDocs, getDoc, deleteDoc} from "firebase/firestore";
+import {auth, firestore as db, firestore} from "../db";
 import './CreateEventView.css';
 import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 async function getUserById(id) {
     const docRef = doc(db, "events", id);
     const docSnap = await getDoc(docRef);
@@ -21,9 +21,7 @@ const EditEventPage = () => {
     ]);
     const [newGuests, setNewGuests] = useState([]);
     const [event, setEvent] = useState();
-    const [collectionData, setCollectionData] = useState([]);
     const [subcollectionData, setSubcollectionData] = useState([]);
-    const [docID, setDocID] = useState('');
     const navigate = useNavigate();
     const [numFields, setNumFields] = useState(1);
 
@@ -39,13 +37,9 @@ const EditEventPage = () => {
         return unsubscribe;
     }, []);
 
-
-
-
-
     const handleAddNewField = () => {
-        setNumFields(numFields + 1);
-        setNewGuests([...newGuests, { orderId: numFields + 1, name: "", project: "" }]);
+            setNumFields(numFields + 1);
+            setNewGuests([...newGuests, { orderId: numFields + 1, name: "", project: "" }]);
     };
 
 
@@ -91,7 +85,7 @@ const EditEventPage = () => {
 
             setGuests(sortedGuests);
             const maxId = Math.max(...sortedGuests.map(guest => guest.orderId));
-            setNumFields(maxId)
+            setNumFields(sortedGuests ? maxId : 1)
 
         };
         fetchData();
@@ -110,6 +104,13 @@ const EditEventPage = () => {
         fetchSubcollectionData();
     }, []);
 
+    const handleDeleteNewGuest = (orderId) => {
+        setNewGuests(newGuests.filter((guest) => guest.orderId !== orderId));
+    }
+    const handleDeleteGuest = (orderId) => {
+        setGuests(guests.filter((guest) => guest.orderId !== orderId));
+    }
+
 
     const updateOrCreateGuest = async (eventId, guestId, dataToUpdate) => {
         try {
@@ -121,22 +122,37 @@ const EditEventPage = () => {
             console.error("Error updating or creating guest: ", error);
         }
     };
+
+    const deleteIfNotExists = async (eventId, guestId) => {
+        const guestRef = doc(db, `events/${eventId}/guests/${guestId}`);
+        await deleteDoc(guestRef);
+        console.log('Deleted')
+    };
+
     const handleSubmit = async () => {
         const docRef = doc(db, "events", id);
 
         const guestsRef = collection(db, `events/${id}/guests`);
         const guestsSnapshot = await getDocs(guestsRef);
         const guestsList = guestsSnapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+
+        const guestsOrderId = guests.map((obj) => obj.orderId);
+
         guestsList.forEach((guest, key) => {
-             guests.map((el) => el.orderId === guest.orderId ? updateOrCreateGuest(id, guest.id, el) : null);
+        if (guestsOrderId.includes(guest.orderId)) {
+            guests.map((el) => el.orderId === guest.orderId ? updateOrCreateGuest(id, guest.id, el) : null);
+        } else {
+            deleteIfNotExists(id, guest.id)
+            console.log(false)
+        }
+
+
         });
 
         newGuests.forEach((guest) => {
             addDoc(collection(doc(db, 'events', id), 'guests'), guest);
         });
-
-
-
 
         await updateDoc(docRef, {
             title: nameEvent,
@@ -167,6 +183,14 @@ const EditEventPage = () => {
             />
             {guests.map((guest) => (
                 <div key={guest.orderId}>
+                    {guests.length === 1 && newGuests.length === 0  ?
+                        null : <Button
+                            onClick={(e) => handleDeleteGuest(guest.orderId)}
+                            value={`Delete Guest ${guest.orderId}`}
+                            className="form-block__button"
+                            fontSize="20px"
+                        />}
+
                     <InputField
                         type="text"
                         valueInput={guest.name}
@@ -185,6 +209,14 @@ const EditEventPage = () => {
             ))}
             {newGuests.map((guest) => (
                 <div key={guest.orderId}>
+                    {guests.length === 0 && newGuests.length === 1  ?
+                        null :
+                        <Button
+                        onClick={(e) => handleDeleteNewGuest(guest.orderId)}
+                        value={`Delete Guest ${guest.orderId}`}
+                        className="form-block__button"
+                        fontSize="20px"
+                    /> }
                     <InputField
                         type="text"
                         valueInput={guest.name}
