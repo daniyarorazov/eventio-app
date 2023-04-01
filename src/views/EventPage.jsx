@@ -5,29 +5,57 @@ import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
 import download from '../assets/download.svg';
 
-import {collection, doc, getDoc, getDocs} from "firebase/firestore";
-import { firestore as db, auth } from "../db";
+import {collection, doc, getDoc, query, onSnapshot} from "firebase/firestore";
+import {firestore as db, auth, firestore} from "../db";
 import Button from "../components/Button.jsx";
 
-async function getUserById(id) {
-    const docRef = doc(db, "events", id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        return docSnap.data();
-    }
-}
 
 const EventPage = () => {
 
     const { id } = useParams();
-    const [event, setEvent] = useState(null);
+    const [eventInfo, setEventInfo] = useState([]);
     const [subcollectionData, setSubcollectionData] = useState([]);
 
+
+
+    const [loading, setLoading] = useState(true);
+    const colRef = doc(db, "events", id);
+
     useEffect(() => {
-        getUserById(id).then((data) => {
-            setEvent(data);
+        const unsubscribe = onSnapshot(colRef, (docSnap) => {
+            const eventsData = [];
+            eventsData.push(docSnap.data());
+            setEventInfo(eventsData);
+            setLoading(false);
         });
-    }, [id]);
+
+        return () => unsubscribe();
+    }, );
+
+    // async function getUserById(id) {
+    //     const docRef = doc(db, "events", id);
+    //
+    //     const unsubscribe = onSnapshot(docRef, (docSnap) => {
+    //         if (docSnap.exists()) {
+    //             setEvent(docSnap.data());
+    //         }
+    //     });
+    //
+    //     return unsubscribe;
+    // }
+    // useEffect(() => {
+    //     let unsubscribe;
+    //
+    //     async function fetchData() {
+    //         unsubscribe = await getUserById(id);
+    //     }
+    //
+    //     fetchData();
+    //
+    //     return () => {
+    //         unsubscribe();
+    //     };
+    // }, [id]);
 
     const [userID, setUserID] = useState(null);
 
@@ -44,25 +72,27 @@ const EventPage = () => {
     }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const subcollectionRef = collection(
-                db,
-                "events",
-                id,
-                "guests"
-            );
-            const subcollectionSnapshot = await getDocs(subcollectionRef);
-            const data = subcollectionSnapshot.docs.map((doc) => doc.data());
+        const subcollectionRef = collection(db, "events", id, "guests");
+        const q = query(subcollectionRef);
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const data = querySnapshot.docs.map((doc) => doc.data());
             const sortedGuests = data.sort((a, b) => a.id - b.id);
             setSubcollectionData(sortedGuests);
+        });
+
+        return () => {
+            unsubscribe();
         };
-        fetchData();
-    }, []);
+    }, [id]);
+
 
     return (
 
         <>
-            {event && (
+            {loading ? (
+                <div>Loading...</div>
+            ) :
+                eventInfo.map((event) => (
             <header>
                 <br/><br/>
                 <Link to={`http://localhost:5173/share/${id}`}>
@@ -84,8 +114,8 @@ const EventPage = () => {
                     <h3>{event.date}</h3>
                 </div>
             </header>
-                )}
-            {event && (
+                ))}
+            {eventInfo.map((event) => (
             <main>
                 <section className="section section-event-timeline">
 
@@ -153,7 +183,7 @@ const EventPage = () => {
                     </div>
                 </section>
             </main>
-            )}
+            ))}
         </>
     );
 };
