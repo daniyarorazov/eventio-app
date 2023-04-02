@@ -61,7 +61,7 @@ const EventPage = () => {
         };
     }, [id]);
 
-
+    const urlOrigin = document.location.origin;
     return (
 
         <>
@@ -71,14 +71,14 @@ const EventPage = () => {
                 eventInfo.map((event) => (
             <header>
                 <br/><br/>
-                <Link to={`http://localhost:5173/share/${id}`}>
+                <Link to={`${urlOrigin}/share/${id}`}>
                     <Button
                     value={"Share QR code"}
                     className="event-page__button"
                 /></Link>
                 <br/><br/>
                 {event.uid == userID ?
-                    <Link to={`http://localhost:5173/event/edit/${id}`}>
+                    <Link to={`${urlOrigin}/event/edit/${id}`}>
                     <Button
                         value={"Edit event"}
                         className="event-page__button"
