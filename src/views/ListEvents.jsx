@@ -35,7 +35,6 @@ const ListEvents = () => {
         return () => unsubscribe();
     }, []);
 
-    console.log(events)
 
     return (
         <div>

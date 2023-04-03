@@ -25,7 +25,6 @@ export function currentStateUser() {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const [user] = useAuthState(getAuth(auth));
-    console.log(user)
     return user;
 }
 

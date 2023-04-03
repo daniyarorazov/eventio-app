@@ -22,12 +22,8 @@ function App() {
 const SignInView2 = () => {
 
     const signInWithGoogle = async () => {
-        try {
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
-        } catch (error) {
-            console.log(error);
-        }
     };
     return (
         <div>

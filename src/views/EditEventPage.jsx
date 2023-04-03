@@ -113,20 +113,15 @@ const EditEventPage = () => {
 
 
     const updateOrCreateGuest = async (eventId, guestId, dataToUpdate) => {
-        try {
             const guestRef = doc(db, `events/${eventId}/guests/${guestId}`);
             const guestDoc = await getDoc(guestRef);
             await updateDoc(guestRef, dataToUpdate);
 
-        } catch (error) {
-            console.error("Error updating or creating guest: ", error);
-        }
     };
 
     const deleteIfNotExists = async (eventId, guestId) => {
         const guestRef = doc(db, `events/${eventId}/guests/${guestId}`);
         await deleteDoc(guestRef);
-        console.log('Deleted')
     };
 
     const handleSubmit = async () => {
@@ -144,7 +139,6 @@ const EditEventPage = () => {
             guests.map((el) => el.orderId === guest.orderId ? updateOrCreateGuest(id, guest.id, el) : null);
         } else {
             deleteIfNotExists(id, guest.id)
-            console.log(false)
         }
 
 

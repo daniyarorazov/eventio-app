@@ -33,7 +33,6 @@ const CreateEventView = () => {
 
 
     const handleSubmit = async () => {
-        try {
             const docRef = await addDoc(collection(db, 'events'), {
                 title: nameEvent,
                 date: date,
@@ -43,14 +42,10 @@ const CreateEventView = () => {
             guests.forEach(async (guest) => {
                 await addDoc(collection(doc(db, 'events', docRef.id), 'guests'), guest);
             });
-            console.log('Document written with ID: ', docRef.id);
             setDocID(docRef.id)
             setNameEvent('');
             setDate('');
             navigate(`/share/${docRef.id}`);
-        } catch (error) {
-            console.error('Error adding document: ', error);
-        }
     };
 
     const handleAddNewField = () => {
