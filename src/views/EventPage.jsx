@@ -8,6 +8,8 @@ import download from '../assets/download.svg';
 import {collection, doc, getDoc, query, onSnapshot} from "firebase/firestore";
 import {firestore as db, auth, firestore} from "../db";
 import Button from "../components/Button.jsx";
+import { debounce } from 'lodash';
+
 
 
 const EventPage = () => {
@@ -21,16 +23,31 @@ const EventPage = () => {
     const [loading, setLoading] = useState(true);
     const colRef = doc(db, "events", id);
 
+    // useEffect(() => {
+    //     const unsubscribe = onSnapshot(colRef, (docSnap) => {
+    //         const eventsData = [];
+    //         eventsData.push(docSnap.data());
+    //         setEventInfo(eventsData);
+    //         setLoading(false);
+    //     });
+    //
+    //     return () => unsubscribe();
+    // }, [colRef]);
+
     useEffect(() => {
-        const unsubscribe = onSnapshot(colRef, (docSnap) => {
+        const debouncedCallback = debounce((docSnap) => {
             const eventsData = [];
             eventsData.push(docSnap.data());
             setEventInfo(eventsData);
             setLoading(false);
+        }, 500); // debounce for 500 milliseconds
+
+        const unsubscribe = onSnapshot(colRef, (docSnap) => {
+            debouncedCallback(docSnap);
         });
 
         return () => unsubscribe();
-    }, );
+    }, []);
 
 
     const [userID, setUserID] = useState(null);
