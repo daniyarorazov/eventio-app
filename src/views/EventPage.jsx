@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useParams} from "react-router-dom";
+import {Link, redirect, useNavigate, useParams} from "react-router-dom";
 import './EventPage.css';
 import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
@@ -9,25 +9,35 @@ import avatarLionIcon from '../assets/lion.jpg';
 import avatarKoalaIcon from '../assets/koala.jpg';
 import download from '../assets/download.svg';
 
-import {collection, doc, getDoc, query, onSnapshot, addDoc} from "firebase/firestore";
+import {collection, doc, getDoc, query, onSnapshot, addDoc, serverTimestamp} from "firebase/firestore";
 import {firestore as db, auth, firestore} from "../db";
 import Button from "../components/Button.jsx";
 import { debounce } from 'lodash';
 import InputField from "../components/InputField.jsx";
+import {useAuthState} from "react-firebase-hooks/auth";
 
 
 
 const EventPage = () => {
-
     const { id } = useParams();
     const [eventInfo, setEventInfo] = useState([]);
     const [subcollectionData, setSubcollectionData] = useState([]);
     const [commentsDataDB, setCommentsDataDB] = useState([]);
     const [commentValue, setCommentValue] = useState('');
+    const navigate = useNavigate();
+    const [avatarIcon, setAvatarIcon] = useState([]);
+    const [isDataFetched, setIsDataFetched] = useState(false);
+    const [testData, setTestData] = useState();
 
+    const [user] = useAuthState(auth)
+
+    if (!user) {
+        navigate(`/`);
+    }
 
     const [loading, setLoading] = useState(true);
     const colRef = doc(db, "events", id);
+
 
     useEffect(() => {
         const debouncedCallback = debounce((docSnap) => {
@@ -72,7 +82,9 @@ const EventPage = () => {
         });
         const unsubscribe_comments = onSnapshot(qComments, (querySnapshot) => {
             const data = querySnapshot.docs.map((doc) => doc.data());
-            setCommentsDataDB(data);
+            const sortedGuests = data.sort((a, b) => a.addedDate - b.addedDate);
+            setCommentsDataDB(sortedGuests);
+            setIsDataFetched(true);
         });
 
         return () => {
@@ -83,31 +95,26 @@ const EventPage = () => {
 
     const urlOrigin = document.location.origin;
 
-    function addCommentHandler ()  {
-        const avatar = ['lion', 'cat', 'dog', 'koala'];
-        let randomNumber = Math.floor(Math.random() * 4);
-
+    async function addCommentHandler ()  {
         const docRef = doc(db, "events", id);
-        addDoc(collection(doc(db, 'events', docRef.id), 'comments'), {commentValue: commentValue, avatar: avatar[randomNumber]});
+        const now = serverTimestamp();
+
+        const usersRef = await doc(db, "users", user.uid);
+        getDoc(usersRef).then((doc2) => {
+            const avatar = doc2.data().avatar;
+            addDoc(collection(doc(db, 'events', docRef.id), 'comments'), {commentValue: commentValue, uid: user.uid, addedDate: now, avatar: avatar});
+
+        })
+
         setCommentValue('');
-        console.log('Added')
+    }
+
+    function getIcon() {
 
     }
 
-    function avatarChoseFunc(avatar) {
-        if (avatar === "cat") {
-            return avatarCatIcon;
-        }
-        if (avatar === "dog") {
-            return avatarDogIcon;
-        }
-        if (avatar === "lion") {
-            return avatarLionIcon;
-        }
-        if (avatar === "koala") {
-            return avatarKoalaIcon;
-        }
-    }
+
+
 
     return (
 
@@ -116,6 +123,7 @@ const EventPage = () => {
                 <div>Loading...</div>
             ) :
                 eventInfo.map((event) => (
+
             <header>
                 <br/><br/>
                 <Link to={`${urlOrigin}/share/${id}`}>
@@ -221,12 +229,17 @@ const EventPage = () => {
                     <div className="section-comments__content">
 
                             {commentsDataDB && (
-                                commentsDataDB.map((doc) => (
+                                commentsDataDB.map((doc, key) => (
                                     <div className="card">
                                         <div className="card-content">
                                             <div className="card-content__user">
-                                                <img src={avatarChoseFunc(doc.avatar)} alt=""/>
-                                                <span>username</span>
+                                                <img src={doc.avatar === 'dog' ?
+                                                    avatarDogIcon :
+                                                    doc.avatar === 'cat' ? avatarCatIcon :
+                                                    doc.avatar === 'koala' ? avatarKoalaIcon :
+                                                    avatarLionIcon} alt=""/>
+                                                <span>{user.displayName}</span>
+
                                             </div>
                                             <div className="card-content__text">
                                                 <p>{doc.commentValue} </p>
