@@ -5,10 +5,11 @@ import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
 import download from '../assets/download.svg';
 
-import {collection, doc, getDoc, query, onSnapshot} from "firebase/firestore";
+import {collection, doc, getDoc, query, onSnapshot, addDoc} from "firebase/firestore";
 import {firestore as db, auth, firestore} from "../db";
 import Button from "../components/Button.jsx";
 import { debounce } from 'lodash';
+import InputField from "../components/InputField.jsx";
 
 
 
@@ -17,22 +18,12 @@ const EventPage = () => {
     const { id } = useParams();
     const [eventInfo, setEventInfo] = useState([]);
     const [subcollectionData, setSubcollectionData] = useState([]);
-
+    const [commentsDataDB, setCommentsDataDB] = useState([]);
+    const [commentValue, setCommentValue] = useState('');
 
 
     const [loading, setLoading] = useState(true);
     const colRef = doc(db, "events", id);
-
-    // useEffect(() => {
-    //     const unsubscribe = onSnapshot(colRef, (docSnap) => {
-    //         const eventsData = [];
-    //         eventsData.push(docSnap.data());
-    //         setEventInfo(eventsData);
-    //         setLoading(false);
-    //     });
-    //
-    //     return () => unsubscribe();
-    // }, [colRef]);
 
     useEffect(() => {
         const debouncedCallback = debounce((docSnap) => {
@@ -66,19 +57,37 @@ const EventPage = () => {
 
     useEffect(() => {
         const subcollectionRef = collection(db, "events", id, "guests");
+        const commentsRef = collection(db, "events", id, "comments");
+
         const q = query(subcollectionRef);
+        const qComments = query(commentsRef);
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const data = querySnapshot.docs.map((doc) => doc.data());
             const sortedGuests = data.sort((a, b) => a.orderId - b.orderId);
             setSubcollectionData(sortedGuests);
         });
+        const unsubscribe_comments = onSnapshot(qComments, (querySnapshot) => {
+            const data = querySnapshot.docs.map((doc) => doc.data());
+            setCommentsDataDB(data);
+        });
 
         return () => {
             unsubscribe();
+            unsubscribe_comments();
         };
     }, [id]);
 
     const urlOrigin = document.location.origin;
+
+    function addCommentHandler ()  {
+
+        const docRef = doc(db, "events", id);
+        addDoc(collection(doc(db, 'events', docRef.id), 'comments'), {commentValue: commentValue});
+        setCommentValue('');
+        console.log('Added')
+
+    }
+
     return (
 
         <>
@@ -111,8 +120,6 @@ const EventPage = () => {
             {eventInfo.map((event) => (
             <main>
                 <section className="section section-event-timeline">
-
-
                     {subcollectionData && (
                         subcollectionData.map((doc) => (
                             <div className={`event__${doc.id} event-block`}>
@@ -173,6 +180,40 @@ const EventPage = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </section>
+                <section className="section section-comments">
+                    <h2>Comments</h2>
+                    <div className="section-comments__block">
+                        <InputField
+                            valueInput={commentValue}
+                            onChange={(e) => setCommentValue(e.target.value)}
+                            className="section-comments__input"
+                        />
+                        <Button
+                            backgroundColor={"#FFE68D"}
+                            className="section-comments__button"
+                            value="Add comment"
+                            onClick={() => addCommentHandler()}
+                        />
+                    </div>
+                    <div className="section-comments__content">
+
+                            {commentsDataDB && (
+                                commentsDataDB.map((doc) => (
+                                    <div className="card">
+                                        <div className="card-content">
+                                            <img src={presentationIcon} alt=""/>
+                                            <h4>{doc.commentValue} </h4>
+                                        </div>
+                                        <div className="card-buttons">
+                                            <button className="card-buttons__download">
+                                                <img src={download} alt=""/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )))}
+
                     </div>
                 </section>
             </main>
