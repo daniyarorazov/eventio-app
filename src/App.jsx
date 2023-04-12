@@ -6,6 +6,8 @@ import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import {useAuthState} from "react-firebase-hooks/auth";
 
 import {app, auth, firestore, performance, storage} from "./db";
+import {Link} from "react-router-dom";
+import Button from "./components/Button.jsx";
 
 function App() {
     const [user] = useAuthState(auth)
@@ -34,7 +36,10 @@ const SignInView2 = () => {
 
 const SignOut = () => {
     return auth.currentUser && (
-        <button onClick={() => auth.signOut()}>Sign out</button>
+       <div className="starter-page__buttons">
+           <Button className="sign-out__button" onClick={() => auth.signOut()} value="Sign out" />
+           <Link to="./create-event"><Button backgroundColor={"#FFE68D"}  className="create-event__button" value="Create event" /></Link>
+       </div>
     )
 }
 

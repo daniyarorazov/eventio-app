@@ -13,6 +13,7 @@ const Button = ({value, onClick, className, backgroundColor, fontSize}) => {
         backgroundColor: backgroundColor ? backgroundColor : "#FF87C8",
         color: backgroundColor ? "#1B445F" : "#fff",
         cursor: 'pointer',
+
     }
 
     return (
