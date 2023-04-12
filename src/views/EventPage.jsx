@@ -3,6 +3,10 @@ import {Link, useParams} from "react-router-dom";
 import './EventPage.css';
 import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
+import avatarCatIcon from '../assets/cat.jpg';
+import avatarDogIcon from '../assets/dog.jpg';
+import avatarLionIcon from '../assets/lion.jpg';
+import avatarKoalaIcon from '../assets/koala.jpg';
 import download from '../assets/download.svg';
 
 import {collection, doc, getDoc, query, onSnapshot, addDoc} from "firebase/firestore";
@@ -80,12 +84,29 @@ const EventPage = () => {
     const urlOrigin = document.location.origin;
 
     function addCommentHandler ()  {
+        const avatar = ['lion', 'cat', 'dog', 'koala'];
+        let randomNumber = Math.floor(Math.random() * 4);
 
         const docRef = doc(db, "events", id);
-        addDoc(collection(doc(db, 'events', docRef.id), 'comments'), {commentValue: commentValue});
+        addDoc(collection(doc(db, 'events', docRef.id), 'comments'), {commentValue: commentValue, avatar: avatar[randomNumber]});
         setCommentValue('');
         console.log('Added')
 
+    }
+
+    function avatarChoseFunc(avatar) {
+        if (avatar === "cat") {
+            return avatarCatIcon;
+        }
+        if (avatar === "dog") {
+            return avatarDogIcon;
+        }
+        if (avatar === "lion") {
+            return avatarLionIcon;
+        }
+        if (avatar === "koala") {
+            return avatarKoalaIcon;
+        }
     }
 
     return (
@@ -203,8 +224,13 @@ const EventPage = () => {
                                 commentsDataDB.map((doc) => (
                                     <div className="card">
                                         <div className="card-content">
-                                            <img src={presentationIcon} alt=""/>
-                                            <h4>{doc.commentValue} </h4>
+                                            <div className="card-content__user">
+                                                <img src={avatarChoseFunc(doc.avatar)} alt=""/>
+                                                <span>username</span>
+                                            </div>
+                                            <div className="card-content__text">
+                                                <p>{doc.commentValue} </p>
+                                            </div>
                                         </div>
                                         <div className="card-buttons">
                                             <button className="card-buttons__download">
