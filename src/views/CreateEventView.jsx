@@ -37,11 +37,12 @@ const CreateEventView = () => {
                 title: nameEvent,
                 date: date,
                 uid: uid
-                // any other event details you want to add
             });
+
             guests.forEach(async (guest) => {
                 await addDoc(collection(doc(db, 'events', docRef.id), 'guests'), guest);
             });
+
             setDocID(docRef.id)
             setNameEvent('');
             setDate('');

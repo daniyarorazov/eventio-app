@@ -178,12 +178,12 @@ main {
     margin-bottom: 9px;
 }
 
-.card-content {
+.section-materials__list .card .card-content {
     display: flex;
     align-items: center;
 }
 
-.card-content img {
+.section-materials__list .card .card-content img {
     position: relative;
 }
 
@@ -209,4 +209,81 @@ main {
 
 .card-buttons__download:hover {
     background-color: #245574;
+}
+
+.card-buttons__trash {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #143A52;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: 0.6s ease;
+}
+
+
+
+.section-comments__block {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr 66px;
+    align-items: center;
+}
+
+.section-comments__button {
+    width: 20px;
+}
+
+.section-comments__content {
+    margin-top: 30px;
+    padding-bottom: 80px;
+}
+
+.section-comments__input {
+    height: 0;
+    padding: 20px 20px;
+}
+
+.section-comments__content .card {
+    width: 100%;
+    background-color: #09293D;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 14px;
+    margin-bottom: 9px;
+}
+
+.section-comments__content .card .card-content {
+}
+
+.section-comments__content .card .card-content .card-content__user img {
+    margin-right: 10px;
+    width: 34px;
+    border-radius: 100px;
+}
+
+.card-content__user {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.card-content__user span {
+    font-weight: 600;
+}
+
+.card-buttons {
+    margin-left: auto;
+}
+
+
+.section-comments__content p {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
 }

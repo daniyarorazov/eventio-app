@@ -1,38 +1,46 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useParams} from "react-router-dom";
+import {Link, redirect, useNavigate, useParams} from "react-router-dom";
 import './EventPage.css';
 import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
+import avatarCatIcon from '../assets/cat.jpg';
+import avatarDogIcon from '../assets/dog.jpg';
+import avatarLionIcon from '../assets/lion.jpg';
+import avatarKoalaIcon from '../assets/koala.jpg';
 import download from '../assets/download.svg';
+import sendIcon from '../assets/send.svg';
+import trashIcon from '../assets/trash.svg';
 
-import {collection, doc, getDoc, query, onSnapshot} from "firebase/firestore";
+import {collection, doc, getDoc, query, onSnapshot, addDoc, serverTimestamp, deleteDoc} from "firebase/firestore";
 import {firestore as db, auth, firestore} from "../db";
 import Button from "../components/Button.jsx";
 import { debounce } from 'lodash';
+import InputField from "../components/InputField.jsx";
+import {useAuthState} from "react-firebase-hooks/auth";
+import TextareaField from "../components/TextareaField.jsx";
 
 
 
 const EventPage = () => {
-
     const { id } = useParams();
     const [eventInfo, setEventInfo] = useState([]);
     const [subcollectionData, setSubcollectionData] = useState([]);
+    const [commentsDataDB, setCommentsDataDB] = useState([]);
+    const [commentValue, setCommentValue] = useState('');
+    const navigate = useNavigate();
+    const [avatarIcon, setAvatarIcon] = useState([]);
+    const [isDataFetched, setIsDataFetched] = useState(false);
+    const [testData, setTestData] = useState();
 
+    const [user] = useAuthState(auth)
 
+    if (!user) {
+        navigate(`/`);
+    }
 
     const [loading, setLoading] = useState(true);
     const colRef = doc(db, "events", id);
 
-    // useEffect(() => {
-    //     const unsubscribe = onSnapshot(colRef, (docSnap) => {
-    //         const eventsData = [];
-    //         eventsData.push(docSnap.data());
-    //         setEventInfo(eventsData);
-    //         setLoading(false);
-    //     });
-    //
-    //     return () => unsubscribe();
-    // }, [colRef]);
 
     useEffect(() => {
         const debouncedCallback = debounce((docSnap) => {
@@ -66,19 +74,60 @@ const EventPage = () => {
 
     useEffect(() => {
         const subcollectionRef = collection(db, "events", id, "guests");
+        const commentsRef = collection(db, "events", id, "comments");
+
         const q = query(subcollectionRef);
+        const qComments = query(commentsRef);
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const data = querySnapshot.docs.map((doc) => doc.data());
             const sortedGuests = data.sort((a, b) => a.orderId - b.orderId);
             setSubcollectionData(sortedGuests);
         });
+        const unsubscribe_comments = onSnapshot(qComments, (querySnapshot) => {
+            const data = querySnapshot.docs.map((doc) => {
+                return { id: doc.id, ...doc.data() };
+            });
+            const sortedGuests = data.sort((a, b) => a.addedDate - b.addedDate);
+            setCommentsDataDB(sortedGuests);
+            setIsDataFetched(true);
+        });
 
         return () => {
             unsubscribe();
+            unsubscribe_comments();
         };
     }, [id]);
 
     const urlOrigin = document.location.origin;
+
+    async function addCommentHandler ()  {
+        const docRef = doc(db, "events", id);
+        const now = serverTimestamp();
+
+        const usersRef = await doc(db, "users", user.uid);
+
+        getDoc(usersRef).then((doc2) => {
+            const avatar = doc2.data().avatar;
+            addDoc(collection(doc(db, 'events', docRef.id), 'comments'), {commentValue: commentValue, uid: user.uid, addedDate: now, avatar: avatar});
+        })
+
+        setCommentValue('');
+    }
+
+    function handleChange(event) {
+        setCommentValue(event.target.value);
+        event.target.style.height = "auto";
+        event.target.style.height = event.target.scrollHeight + "px";
+    }
+
+    function handleDelete(commentId) {
+        const guestRef = doc(db, `events/${id}/comments/${commentId}`);
+        deleteDoc(guestRef);
+    }
+
+    const sendIconHtml = <img src={sendIcon} alt=""/>
+
+
     return (
 
         <>
@@ -86,6 +135,7 @@ const EventPage = () => {
                 <div>Loading...</div>
             ) :
                 eventInfo.map((event) => (
+
             <header>
                 <br/><br/>
                 <Link to={`${urlOrigin}/share/${id}`}>
@@ -111,8 +161,6 @@ const EventPage = () => {
             {eventInfo.map((event) => (
             <main>
                 <section className="section section-event-timeline">
-
-
                     {subcollectionData && (
                         subcollectionData.map((doc) => (
                             <div className={`event__${doc.id} event-block`}>
@@ -173,6 +221,50 @@ const EventPage = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </section>
+                <section className="section section-comments">
+                    <h2>Comments</h2>
+                    <div className="section-comments__block">
+                        <TextareaField
+                            valueInput={commentValue}
+                            onChange={handleChange}
+                            className="section-comments__input"
+                        />
+                        <Button
+                            backgroundColor={"#FFE68D"}
+                            className="section-comments__button"
+                            value={sendIconHtml}
+                            onClick={() => addCommentHandler()}
+                        />
+                    </div>
+                    <div className="section-comments__content">
+
+                            {commentsDataDB && (
+                                commentsDataDB.map((doc, key) => (
+                                    <div className="card">
+                                        <div className="card-content">
+                                            <div className="card-content__user">
+                                                <img src={doc.avatar === 'dog' ?
+                                                    avatarDogIcon :
+                                                    doc.avatar === 'cat' ? avatarCatIcon :
+                                                    doc.avatar === 'koala' ? avatarKoalaIcon :
+                                                    avatarLionIcon} alt=""/>
+                                                <span>{user.displayName}</span>
+
+                                            </div>
+                                            <div className="card-content__text">
+                                                <p>{doc.commentValue} </p>
+                                            </div>
+                                        </div>
+                                        <div className="card-buttons">
+                                            <button style={{backgroundColor: "#ff4d6d"}} onClick={() => handleDelete(doc.id)} className="card-buttons__trash">
+                                                <img style={{width: "18px"}} src={trashIcon} alt=""/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )))}
+
                     </div>
                 </section>
             </main>
