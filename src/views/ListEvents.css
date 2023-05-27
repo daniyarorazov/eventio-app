@@ -1,3 +1,9 @@
+:root {
+    --hue: 223;
+    --bg: hsl(223,10%,90%);
+    --fg: hsl(223,10%,10%);
+}
+
 a {
     text-decoration: none;
 }
@@ -47,4 +53,5 @@ a {
 .events-block .section-events .section__list-events .card:hover {
     background-color: #123b55;
 }
+
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Link, redirect, useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import './EventPage.css';
 import sprite from '../assets/sprite.svg';
 import presentationIcon from '../assets/presentation-icon.svg';
@@ -12,12 +12,12 @@ import sendIcon from '../assets/send.svg';
 import trashIcon from '../assets/trash.svg';
 
 import {collection, doc, getDoc, query, onSnapshot, addDoc, serverTimestamp, deleteDoc} from "firebase/firestore";
-import {firestore as db, auth, firestore} from "../db";
+import {firestore as db, auth} from "../db";
 import Button from "../components/Button.jsx";
 import { debounce } from 'lodash';
-import InputField from "../components/InputField.jsx";
 import {useAuthState} from "react-firebase-hooks/auth";
 import TextareaField from "../components/TextareaField.jsx";
+import LoadingComponent from "../components/LoadingComponent.jsx";
 
 
 
@@ -28,9 +28,6 @@ const EventPage = () => {
     const [commentsDataDB, setCommentsDataDB] = useState([]);
     const [commentValue, setCommentValue] = useState('');
     const navigate = useNavigate();
-    const [avatarIcon, setAvatarIcon] = useState([]);
-    const [isDataFetched, setIsDataFetched] = useState(false);
-    const [testData, setTestData] = useState();
 
     const [user] = useAuthState(auth)
 
@@ -89,7 +86,6 @@ const EventPage = () => {
             });
             const sortedGuests = data.sort((a, b) => a.addedDate - b.addedDate);
             setCommentsDataDB(sortedGuests);
-            setIsDataFetched(true);
         });
 
         return () => {
@@ -132,7 +128,7 @@ const EventPage = () => {
 
         <>
             {loading ? (
-                <div>Loading...</div>
+                    <LoadingComponent />
             ) :
                 eventInfo.map((event) => (
 
@@ -158,7 +154,7 @@ const EventPage = () => {
                 </div>
             </header>
                 ))}
-            {eventInfo.map((event) => (
+            {eventInfo.map(() => (
             <main>
                 <section className="section section-event-timeline">
                     {subcollectionData && (
@@ -242,7 +238,7 @@ const EventPage = () => {
 
                             {commentsDataDB && (
                                 commentsDataDB.map((doc, key) => (
-                                    <div className="card">
+                                    <div className="card" key={key}>
                                         <div className="card-content">
                                             <div className="card-content__user">
                                                 <img src={doc.avatar === 'dog' ?

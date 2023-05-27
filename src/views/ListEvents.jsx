@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {doc, collection, onSnapshot, getDocs, query, where} from "firebase/firestore";
-import {app, auth, firestore, performance, storage} from "../db";
+import {collection, onSnapshot} from "firebase/firestore";
+import {firestore} from "../db";
 import presentationIcon from "../assets/presentation-icon.svg";
-import download from "../assets/download.svg";
 import './ListEvents.css';
 import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
 import {Link} from "react-router-dom";
+import LoadingComponent from "../components/LoadingComponent.jsx";
 
 const ListEvents = () => {
     const db = firestore;
@@ -76,13 +76,14 @@ const ListEvents = () => {
     return (
         <div className="events-block">
             {loading ? (
-                <div>Loading...</div>
+                <LoadingComponent />
             ) : (
+
                 <div>
 
                     <h2 className="list-events__title">List events</h2>
 
-                   <div className="section-events__controls">
+                    <div className="section-events__controls">
                        <InputField
                            id="searchingEventInput"
                            className="list-events__input"
@@ -110,6 +111,7 @@ const ListEvents = () => {
                                         <div className="card-content">
                                             <img src={presentationIcon} alt=""/>
                                             <h4>{event.title}</h4>
+                                            <span>{event.date}</span>
                                         </div>
                                         <div className="card-buttons">
                                             <button className="card-buttons__download">
