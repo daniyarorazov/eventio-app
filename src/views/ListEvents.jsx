@@ -6,20 +6,7 @@ import download from "../assets/download.svg";
 import './ListEvents.css';
 import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
-
-
-/*
-* const db = firestore;
-* const [event, setEvent] = useState();
-* const colRef = collection(db, "events");
-* onSnapshot(colRef, docsSnap => {
-*   docsSnap.forEach(doc => {
-*   console.log(doc.data()); setEvent(doc.data());
-* })
-* }); return ( <div> {event} </div> );
-*
-*
-* */
+import {Link} from "react-router-dom";
 
 const ListEvents = () => {
     const db = firestore;
@@ -32,10 +19,10 @@ const ListEvents = () => {
         const unsubscribe = onSnapshot(colRef, (docsSnap) => {
             const eventsData = [];
             docsSnap.forEach((doc) => {
-                eventsData.push(doc.data());
+                const eventId = doc.id;
+
+                eventsData.push({id: eventId, ...doc.data()});
             });
-
-
 
             setEvents(eventsData);
             setLoading(false);
@@ -115,23 +102,24 @@ const ListEvents = () => {
                    </div>
 
                     {events.map((event, key) =>
-                        <div className="section-events" key={key}>
-                            <div className="section__list-events">
-                                <div className="card">
-                                    <div className="card-content">
-                                        <img src={presentationIcon} alt=""/>
-                                        <h4>{event.title}</h4>
-                                    </div>
-                                    <div className="card-buttons">
-                                        <button className="card-buttons__download">
-                                        </button>
+
+                        <Link to={`/event/${event.id}`}>
+                            <div className="section-events" key={key}>
+                                <div className="section__list-events">
+                                    <div className="card">
+                                        <div className="card-content">
+                                            <img src={presentationIcon} alt=""/>
+                                            <h4>{event.title}</h4>
+                                        </div>
+                                        <div className="card-buttons">
+                                            <button className="card-buttons__download">
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
+                        </Link>
                     )}
-
                 </div>
             )}
         </div>

@@ -1,6 +1,12 @@
+a {
+    text-decoration: none;
+}
+
 .events-block {
     max-width: 712px;
     margin: 0 auto;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .events-block .list-events__title {
