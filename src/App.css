@@ -70,3 +70,89 @@ button {
     margin: 0 auto;
     margin-bottom: 20px;
 }
+
+/* Animation loading */
+.loading-spinner {
+    margin: 0 auto;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+.ap {
+    width: 14em;
+    height: 30em;
+}
+.ap__ring {
+    stroke: hsla(223,10%,10%,0.15);
+    transition: stroke 0.3s;
+}
+.ap__worm1,
+.ap__worm2 {
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+.ap__worm1 {
+    animation-name: worm1;
+}
+.ap__worm2 {
+    animation-name: worm2;
+    visibility: hidden;
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: hsl(223,10%,10%);
+        --fg: hsl(223,10%,90%);
+    }
+    .ap__ring {
+        stroke: hsla(223,10%,90%,0.1);
+    }
+}
+
+/* Animtions */
+@keyframes worm1 {
+    from {
+        animation-timing-function: ease-in-out;
+        stroke-dashoffset: -87.96;
+    }
+    20% {
+        animation-timing-function: ease-in;
+        stroke-dashoffset: 0;
+    }
+    60% {
+        stroke-dashoffset: -791.68;
+        visibility: visible;
+    }
+    60.1%,
+    to {
+        stroke-dashoffset: -791.68;
+        visibility: hidden;
+    }
+}
+@keyframes worm2 {
+    from,
+    60% {
+        stroke-dashoffset: -87.96;
+        visibility: hidden;
+    }
+    60.1% {
+        animation-timing-function: cubic-bezier(0,0,0.5,0.75);
+        stroke-dashoffset: -87.96;
+        visibility: visible;
+    }
+    77% {
+        animation-timing-function: cubic-bezier(0.5,0.25,0.5,0.88);
+        stroke-dashoffset: -340;
+        visibility: visible;
+    }
+    to {
+        stroke-dashoffset: -669.92;
+        visibility: visible;
+    }
+}
+
