@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {collection, addDoc, doc} from "firebase/firestore";
-import {auth, firestore} from "../db";
+import {collection, addDoc, doc, getDoc} from "firebase/firestore";
+import {auth, firestore as db, firestore} from "../db";
 import './CreateEventView.css';
 import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
-import {useNavigate} from "react-router-dom";
+import {redirect, useNavigate} from "react-router-dom";
 import SideBar from "../components/SideBar.jsx";
+import {useAuthState} from "react-firebase-hooks/auth";
 
 const CreateEventView = () => {
     const [uid, setUid] = useState(null);
@@ -19,6 +20,10 @@ const CreateEventView = () => {
     const [docID, setDocID] = useState('');
     const navigate = useNavigate();
     const [numFields, setNumFields] = useState(1);
+    const [user] = useAuthState(auth);
+
+    const [isOrganizer, setIsOrganizer] = useState(false);
+
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -31,6 +36,30 @@ const CreateEventView = () => {
 
         return unsubscribe;
     }, []);
+
+
+    useEffect(() => {
+        const checkUserRole = async () => {
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+
+            const userData = userDoc.data();
+            const userType = userData.type;
+            setIsOrganizer(userType === 'organizer');
+
+            if (!(userType === 'organizer')) {
+                return navigate('/')
+            }
+
+        };
+
+        if (user) {
+            checkUserRole();
+        }
+
+
+    }, [user]);
+
 
 
     const handleSubmit = async () => {
@@ -79,8 +108,10 @@ const CreateEventView = () => {
 
 
     return (
+
         <>
             <SideBar />
+
         <div className="form-block">
             <InputField
                 type="text"
@@ -128,6 +159,7 @@ const CreateEventView = () => {
                 className="form-block__button"
             />
         </div>
+
         </>
     );
 };

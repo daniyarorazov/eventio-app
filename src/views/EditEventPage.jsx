@@ -5,6 +5,7 @@ import './CreateEventView.css';
 import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
 import {useNavigate, useParams} from "react-router-dom";
+import SideBar from "../components/SideBar.jsx";
 async function getUserById(id) {
     const docRef = doc(db, "events", id);
     const docSnap = await getDoc(docRef);
@@ -160,92 +161,95 @@ const EditEventPage = () => {
 
 
     return (
-        <div className="form-block">
-            <InputField
-                type="text"
-                valueInput={nameEvent}
-                onChange={(e) => setNameEvent(e.target.value)}
-                valueLabel="Event name"
-                className="form-block__input"
-            />
-            <InputField
-                type="text"
-                valueInput={date}
-                onChange={(e) => setDate(e.target.value)}
-                valueLabel="Date of event"
-                className="form-block__input"
-            />
-            {guests.map((guest) => (
-                <div key={guest.orderId}>
-                    {guests.length === 1 && newGuests.length === 0  ?
-                        null : <Button
-                            onClick={(e) => handleDeleteGuest(guest.orderId)}
-                            value={`Delete Guest ${guest.orderId}`}
-                            className="form-block__button"
-                            fontSize="20px"
-                        />}
+        <>
+        <SideBar />
+            <div className="form-block">
+                <InputField
+                    type="text"
+                    valueInput={nameEvent}
+                    onChange={(e) => setNameEvent(e.target.value)}
+                    valueLabel="Event name"
+                    className="form-block__input"
+                />
+                <InputField
+                    type="text"
+                    valueInput={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    valueLabel="Date of event"
+                    className="form-block__input"
+                />
+                {guests.map((guest) => (
+                    <div key={guest.orderId}>
+                        {guests.length === 1 && newGuests.length === 0  ?
+                            null : <Button
+                                onClick={(e) => handleDeleteGuest(guest.orderId)}
+                                value={`Delete Guest ${guest.orderId}`}
+                                className="form-block__button"
+                                fontSize="20px"
+                            />}
 
-                    <InputField
-                        type="text"
-                        valueInput={guest.name}
-                        onChange={(e) => handleNameChange(guest.orderId, e.target.value, guests, setGuests)}
-                        valueLabel={`Guest name (${guest.orderId})`}
-                        className="form-block__input"
-                    />
-                    <InputField
-                        type="text"
-                        valueInput={guest.project}
-                        onChange={(e) => handleProjectChange(guest.orderId, e.target.value, guests, setGuests)}
-                        valueLabel={`Guest project (${guest.orderId})`}
-                        className="form-block__input"
-                    />
-                </div>
-            ))}
-            {newGuests.map((guest) => (
-                <div key={guest.orderId}>
-                    {guests.length === 0 && newGuests.length === 1  ?
-                        null :
-                        <Button
-                        onClick={(e) => handleDeleteNewGuest(guest.orderId)}
-                        value={`Delete Guest ${guest.orderId}`}
-                        className="form-block__button"
-                        fontSize="20px"
-                    /> }
-                    <InputField
-                        type="text"
-                        valueInput={guest.name}
-                        onChange={(e) => handleNameChange(guest.orderId, e.target.value, newGuests, setNewGuests)}
-                        valueLabel={`Guest name (${guest.orderId})`}
-                        className="form-block__input"
-                    />
-                    <InputField
-                        type="text"
-                        valueInput={guest.project}
-                        onChange={(e) => handleProjectChange(guest.orderId, e.target.value, newGuests, setNewGuests)}
-                        valueLabel={`Guest project (${guest.orderId})`}
-                        className="form-block__input"
-                    />
-                </div>
-            ))}
-            <Button
-                onClick={handleAddNewField}
-                value={"Add new guest"}
-                className="form-block__button"
-                backgroundColor={"#FFE68D"}
-                fontSize="20px"
-            />
+                        <InputField
+                            type="text"
+                            valueInput={guest.name}
+                            onChange={(e) => handleNameChange(guest.orderId, e.target.value, guests, setGuests)}
+                            valueLabel={`Guest name (${guest.orderId})`}
+                            className="form-block__input"
+                        />
+                        <InputField
+                            type="text"
+                            valueInput={guest.project}
+                            onChange={(e) => handleProjectChange(guest.orderId, e.target.value, guests, setGuests)}
+                            valueLabel={`Guest project (${guest.orderId})`}
+                            className="form-block__input"
+                        />
+                    </div>
+                ))}
+                {newGuests.map((guest) => (
+                    <div key={guest.orderId}>
+                        {guests.length === 0 && newGuests.length === 1  ?
+                            null :
+                            <Button
+                                onClick={(e) => handleDeleteNewGuest(guest.orderId)}
+                                value={`Delete Guest ${guest.orderId}`}
+                                className="form-block__button"
+                                fontSize="20px"
+                            /> }
+                        <InputField
+                            type="text"
+                            valueInput={guest.name}
+                            onChange={(e) => handleNameChange(guest.orderId, e.target.value, newGuests, setNewGuests)}
+                            valueLabel={`Guest name (${guest.orderId})`}
+                            className="form-block__input"
+                        />
+                        <InputField
+                            type="text"
+                            valueInput={guest.project}
+                            onChange={(e) => handleProjectChange(guest.orderId, e.target.value, newGuests, setNewGuests)}
+                            valueLabel={`Guest project (${guest.orderId})`}
+                            className="form-block__input"
+                        />
+                    </div>
+                ))}
+                <Button
+                    onClick={handleAddNewField}
+                    value={"Add new guest"}
+                    className="form-block__button"
+                    backgroundColor={"#FFE68D"}
+                    fontSize="20px"
+                />
 
-            <Button
-                onClick={handleSubmit}
-                value={"Update Event"}
-                className="form-block__button"
-            />
-            <Button
-                onClick={(e) => navigate(`/event/${id}`)}
-                value={"Cancel"}
-                className="form-block__button"
-            />
-        </div>
+                <Button
+                    onClick={handleSubmit}
+                    value={"Update Event"}
+                    className="form-block__button"
+                />
+                <Button
+                    onClick={(e) => navigate(`/event/${id}`)}
+                    value={"Cancel"}
+                    className="form-block__button"
+                />
+            </div>
+        </>
     );
 };
 
