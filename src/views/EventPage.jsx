@@ -18,6 +18,7 @@ import { debounce } from 'lodash';
 import {useAuthState} from "react-firebase-hooks/auth";
 import TextareaField from "../components/TextareaField.jsx";
 import LoadingComponent from "../components/LoadingComponent.jsx";
+import SideBar from "../components/SideBar.jsx";
 
 
 
@@ -127,6 +128,7 @@ const EventPage = () => {
     return (
 
         <>
+            <SideBar />
             {loading ? (
                     <LoadingComponent />
             ) :

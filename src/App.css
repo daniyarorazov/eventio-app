@@ -84,7 +84,10 @@ button {
     margin-top: 20px;
 }
 .starter-page__buttons .profile__button {
-    margin-bottom: 20px;
+}
+
+.starter-page__buttons .create-event__button {
+    margin-top: 20px;
 }
 
 /* Animation loading */
@@ -179,3 +182,6 @@ button {
     padding-right: 30px;
 }
 
+.modal__type-account .modal-button {
+    margin-top: 20px;
+}
