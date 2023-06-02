@@ -7,6 +7,7 @@ import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
 import {Link} from "react-router-dom";
 import LoadingComponent from "../components/LoadingComponent.jsx";
+import SideBar from "../components/SideBar.jsx";
 
 const ListEvents = () => {
     const db = firestore;
@@ -74,12 +75,17 @@ const ListEvents = () => {
 
 
     return (
+        <>
+            <SideBar />
+
         <div className="events-block">
             {loading ? (
                 <LoadingComponent />
             ) : (
 
+
                 <div>
+
 
                     <h2 className="list-events__title">List events</h2>
 
@@ -125,6 +131,7 @@ const ListEvents = () => {
                 </div>
             )}
         </div>
+        </>
     );
 };
 

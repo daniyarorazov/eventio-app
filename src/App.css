@@ -61,13 +61,29 @@ button {
 .starter-page__buttons {
     display: flex;
     flex-direction: column;
+    max-width: 712px;
     margin: 0 auto;
+    padding-left: 30px;
+    padding-right: 30px;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 50px;
 }
 
 .sign-out__button {
     margin: 0 auto;
+    margin-top: 20px;
+}
+
+.sign-in__button {
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.starter-page__buttons .list-events__button {
+    margin-top: 20px;
+}
+.starter-page__buttons .profile__button {
     margin-bottom: 20px;
 }
 
@@ -154,5 +170,12 @@ button {
         stroke-dashoffset: -669.92;
         visibility: visible;
     }
+}
+
+.container-block {
+    max-width: 712px;
+    margin: 0 auto;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 

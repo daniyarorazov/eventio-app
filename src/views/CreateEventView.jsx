@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {collection, addDoc, doc} from "firebase/firestore";
-import {app, auth, firestore, performance, storage} from "../db";
+import {auth, firestore} from "../db";
 import './CreateEventView.css';
 import InputField from "../components/InputField.jsx";
 import Button from "../components/Button.jsx";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import SideBar from "../components/SideBar.jsx";
 
 const CreateEventView = () => {
     const [uid, setUid] = useState(null);
@@ -78,6 +79,8 @@ const CreateEventView = () => {
 
 
     return (
+        <>
+            <SideBar />
         <div className="form-block">
             <InputField
                 type="text"
@@ -125,6 +128,7 @@ const CreateEventView = () => {
                 className="form-block__button"
             />
         </div>
+        </>
     );
 };
 

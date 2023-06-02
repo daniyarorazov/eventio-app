@@ -6,10 +6,12 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import EventPage from "./views/EventPage.jsx";
 import CreateEventView from "./views/CreateEventView.jsx";
 import ListEvents from "./views/ListEvents.jsx";
-import {auth, currentStateUser} from "./db.jsx";
+import {currentStateUser} from "./db.jsx";
 import ResultCreatedEventView from "./views/ResultCreatedEventView.jsx";
 import EditEventPage from "./views/EditEventPage.jsx";
-import {useAuthState} from "react-firebase-hooks/auth";
+import ProfilePage from "./views/ProfilePage.jsx";
+import SettingsPage from "./views/SettingsPage.jsx";
+import Bookmarks from "./views/Bookmarks.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -21,6 +23,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/events/" element={<ListEvents />} />
               <Route path="/share/:id" element={ <ResultCreatedEventView /> } />
               <Route path="/event/edit/:id" element={ <EditEventPage /> } />
+              <Route path="/profile" element={ <ProfilePage /> } />
+              <Route path="/profile/settings" element={ <SettingsPage /> } />
+              <Route path="/profile/bookmarks" element={ <Bookmarks /> } />
           </Routes>
       </BrowserRouter>
   </React.StrictMode>,

@@ -1,0 +1,14 @@
+.section-profile-user {
+    margin-top: 70px;
+}
+
+.section-profile-user .profile-user__name {
+    text-align: center;
+    font-size: 36px;
+}
+
+.section-profile-user .profile-user__button {
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+}

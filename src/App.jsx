@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './App.css'
 
-import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 
 import {useAuthState} from "react-firebase-hooks/auth";
 
-import {app, auth, firestore as db, firestore, performance, storage} from "./db";
+import {auth, firestore as db} from "./db";
 import {Link} from "react-router-dom";
 import Button from "./components/Button.jsx";
-import {addDoc, collection, doc, setDoc} from "firebase/firestore";
+import {doc, setDoc} from "firebase/firestore";
+import SideBar from "./components/SideBar.jsx";
 
 function App() {
     const [user] = useAuthState(auth)
@@ -44,7 +45,7 @@ const SignInView2 = () => {
     };
     return (
         <div>
-            <button onClick={signInWithGoogle}>Sign in with Google</button>
+            <Button onClick={signInWithGoogle} value="Sign in with Google" className="sign-in__button"  />
         </div>
     );
 };
@@ -52,12 +53,18 @@ const SignInView2 = () => {
 const SignOut = () => {
     const [user] = useAuthState(auth)
     return auth.currentUser && (
-       <div className="starter-page__buttons">
-           <h2>Hello {user.displayName}</h2>
-           <span>{<img src="{user.avatar}" alt=""/>}</span>
-           <Button className="sign-out__button" onClick={() => auth.signOut()} value="Sign out" />
-           <Link to="./create-event"><Button backgroundColor={"#FFE68D"}  className="create-event__button" value="Create event" /></Link>
-       </div>
+        <>
+            <SideBar />
+            <div className="starter-page__buttons">
+                <h2>Hello {user.displayName}</h2>
+                <br/>
+                <Link to="./profile"><Button backgroundColor={"#FFE68D"}  className="profile__button" value="My Profile" /></Link>
+                <Link to="./create-event"><Button backgroundColor={"#FFE68D"}  className="create-event__button" value="Create event" /></Link>
+                <Link to="./events"><Button backgroundColor={"#FFE68D"}  className="list-events__button" value="List events" /></Link>
+                <Button className="sign-out__button" onClick={() => auth.signOut()} value="Sign out" />
+
+            </div>
+        </>
     )
 }
 
